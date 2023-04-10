@@ -1,0 +1,13 @@
+watch:
+  directories:
+    - src
+    - tests
+  fileMask: '*.php'
+notifications:
+  passingTests: false
+  failingTests: false
+phpunit:
+  binaryPath: vendor/bin/simple-phpunit
+  #arguments: '--coverage-html tests/coverage'
+  arguments: --testdox
+  timeout: 180
