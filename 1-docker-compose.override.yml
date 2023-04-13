@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+###> doctrine/doctrine-bundle ###
+  database:
+    ports:
+      - "5432"
+###< doctrine/doctrine-bundle ###
+
+###> symfony/mailer ###
+  mailer:
+    image: schickling/mailcatcher
+    ports: ["1025", "1080"]
+
+
+
+  mysql:
+    container_name: mysql5.7
+    image: mysql:5.7
+    restart: always
+    labels:
+      - "traefik.enable=true" # active la gestion de ce container par Traefik
+    volumes:
+      - ./db/:/var/lib/mysql/
+      # - ./database/:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    environment:
+      # MYSQL_DATABASE: championnat_ski
+      # MYSQL_USER: root
+      # MYSQL_PASSWORD:
+      MYSQL_ROOT_PASSWORD: test
+    networks:
+      - proxy
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
+    restart: always
+    depends_on:
+      - mysql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`pma.docker.localhost`)"
+    volumes:
+      - /sessions
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_PASSWORD=test
+      - PMA_USER=root
+    networks:
+      - proxy
+###< symfony/mailer ###
