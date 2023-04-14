@@ -49,7 +49,6 @@ dbdev: ## Build the DB, control the schema validity, load fixtures and check the
 
 dbdev-local: ## Build the DB, control the schema validity, load fixtures and check the migration status
 	symfony console doctrine:cache:clear-metadata
-	symfony console doctrine:database:create --if-not-exists
 	symfony console doctrine:schema:drop --force
 	symfony console doctrine:schema:create
 	symfony console doctrine:schema:validate

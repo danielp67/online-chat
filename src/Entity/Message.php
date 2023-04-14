@@ -56,9 +56,9 @@ class Message
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?string
     {
-        return $this->user;
+        return $this->user->getUsername();
     }
 
     public function setUser(?User $user): self
