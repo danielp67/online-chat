@@ -6,9 +6,16 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'Il y a déjà un compte avec cet email',
+    groups: ['register']
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -17,6 +24,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(
+        message: 'Email vide',
+        groups: ['register', 'login']
+    )]
+    #[Assert\Email(
+        message:'Format email incorrect',
+        groups: ['register', 'login']
+    )]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
@@ -26,9 +41,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
+    #[Assert\NotBlank(
+        message: 'Mot de passe vide',
+        groups: ['register', 'login']
+    )]
+    #[Assert\Email(
+        message:'Format mot de passe incorrect',
+        groups: ['register', 'login']
+    )]
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Assert\NotBlank(
+        message: 'Pseudo vide',
+        groups: ['register']
+    )]
+    #[Assert\Email(
+        message:'Format pseudo incorrect',
+        groups: ['register']
+    )]
     #[ORM\Column(length: 255)]
     private ?string $username = null;
 

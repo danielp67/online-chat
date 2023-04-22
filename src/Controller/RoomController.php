@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/room')]
+#[Route('/profile/room')]
 class RoomController extends AbstractController
 {
     #[Route('/', name: 'app_room_index', methods: ['GET'])]

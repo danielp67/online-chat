@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/message')]
+#[Route('/profile/message')]
 class MessageController extends AbstractController
 {
     #[Route('/', name: 'app_message_index', methods: ['GET'])]

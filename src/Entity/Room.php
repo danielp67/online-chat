@@ -24,6 +24,10 @@ class Room
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $createBy = null;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -103,6 +107,18 @@ class Room
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCreateBy(): ?User
+    {
+        return $this->createBy;
+    }
+
+    public function setCreateBy(User $createBy): self
+    {
+        $this->createBy = $createBy;
 
         return $this;
     }
