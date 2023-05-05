@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Message;
 use App\Entity\Room;
 use App\Entity\User;
+use DateInterval;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -27,7 +28,7 @@ class MessageFixtures extends Fixture implements DependentFixtureInterface
         assert($room2 instanceof Room);
 
          $message1 = new Message();
-        $message1->setCreatedAt(new DateTime())
+        $message1->setCreatedAt((new DateTime())->sub(new DateInterval('P2D')))
             ->setContent('Message 1')
             ->setUser($user1)
             ->setRoom($room1);
@@ -42,10 +43,10 @@ class MessageFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($message2);
 
         $message3 = new Message();
-        $message3->setCreatedAt(new DateTime())
+        $message3->setCreatedAt((new DateTime())->sub(new DateInterval('P2D')))
             ->setContent('Message 3')
             ->setUser($user1)
-            ->setRoom($room1);
+            ->setRoom($room2);
         $manager->persist($message3);
 
         $manager->flush();

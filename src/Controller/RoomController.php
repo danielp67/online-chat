@@ -2,15 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\Message;
 use App\Entity\Room;
+use App\Form\MessageType;
 use App\Form\RoomType;
+use App\Repository\MessageRepository;
 use App\Repository\RoomRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/profile/room')]
+#[Route('/app/room')]
 class RoomController extends AbstractController
 {
     #[Route('/', name: 'app_room_index', methods: ['GET'])]
@@ -18,6 +21,7 @@ class RoomController extends AbstractController
     {
         return $this->render('room/index.html.twig', [
             'rooms' => $roomRepository->findAll(),
+            'user' => $this->getUser()
         ]);
     }
 
@@ -40,11 +44,28 @@ class RoomController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_room_show', methods: ['GET'])]
-    public function show(Room $room): Response
+    #[Route('/{id}', name: 'app_room_show', methods: ['GET', 'POST'])]
+    public function show(Request $request, Room $room, MessageRepository $messageRepository): Response
     {
+        $message = new Message();
+        $form = $this->createForm(MessageType::class, $message);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $message->setCreatedAt(new \DateTime());
+            $message->setRoom($room);
+            $message->setUser($this->getUser());
+
+            $messageRepository->save($message, true);
+        }
+
         return $this->render('room/show.html.twig', [
             'room' => $room,
+            'user' => $this->getUser(),
+            'messages' => $messageRepository->findby(['room' => $room],['createdAt' => 'DESC']),
+            'form' => $form,
+
         ]);
     }
 

@@ -18,9 +18,13 @@
             <tr>
                 <td>{{ room.id }}</td>
                 <td>{{ room.name }}</td>
+
                 <td>
-                    <a href="{{ path('app_room_show', {'id': room.id}) }}">show</a>
-                    <a href="{{ path('app_room_edit', {'id': room.id}) }}">edit</a>
+                    <a href="{{ path('app_room_show', {'id': room.id}) }}">enter</a>
+
+                    {% if user.id == room.createBy.id %}
+                        <a href="{{ path('app_room_edit', {'id': room.id}) }}">edit</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}
