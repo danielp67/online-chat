@@ -58,12 +58,14 @@ class RoomController extends AbstractController
             $message->setUser($this->getUser());
 
             $messageRepository->save($message, true);
+            return $this->redirectToRoute('app_room_show', ['id' => $room->getId()]);
+
         }
 
         return $this->render('room/show.html.twig', [
             'room' => $room,
             'user' => $this->getUser(),
-            'messages' => $messageRepository->findby(['room' => $room],['createdAt' => 'DESC']),
+            'messages' => $messageRepository->findby(['room' => $room],['createdAt' => 'ASC']),
             'form' => $form,
 
         ]);
