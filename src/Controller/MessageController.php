@@ -10,69 +10,40 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/app/message')]
+#[Route('/app/room/{roomId}')]
 class MessageController extends AbstractController
 {
-    #[Route('/', name: 'app_message_index', methods: ['GET'])]
-    public function index(MessageRepository $messageRepository): Response
-    {
-        return $this->render('message/index.html.twig', [
-            'messages' => $messageRepository->findAll(),
-        ]);
-    }
-
-    #[Route('/new', name: 'app_message_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, MessageRepository $messageRepository): Response
-    {
-        $message = new Message();
-        $form = $this->createForm(MessageType::class, $message);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $messageRepository->save($message, true);
-
-            return $this->redirectToRoute('app_message_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('message/new.html.twig', [
-            'message' => $message,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_message_show', methods: ['GET'])]
-    public function show(Message $message): Response
-    {
-        return $this->render('message/show.html.twig', [
-            'message' => $message,
-        ]);
-    }
 
     #[Route('/{id}/edit', name: 'app_message_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Message $message, MessageRepository $messageRepository): Response
     {
         $form = $this->createForm(MessageType::class, $message);
         $form->handleRequest($request);
-
+        $roomId = $request->attributes->get('roomId');
+       // dd($request->attributes->get('roomId'));
         if ($form->isSubmitted() && $form->isValid()) {
             $messageRepository->save($message, true);
 
-            return $this->redirectToRoute('app_message_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_room_show', ['id' => $roomId], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('message/edit.html.twig', [
             'message' => $message,
             'form' => $form,
+            'roomId' => $roomId
         ]);
     }
 
-    #[Route('/{id}', name: 'app_message_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_message_delete', methods: ['GET','POST'])]
     public function delete(Request $request, Message $message, MessageRepository $messageRepository): Response
     {
+        $roomId = $request->attributes->get('roomId');
+
         if ($this->isCsrfTokenValid('delete'.$message->getId(), $request->request->get('_token'))) {
+
             $messageRepository->remove($message, true);
         }
 
-        return $this->redirectToRoute('app_message_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_room_show', ['id' => $roomId], Response::HTTP_SEE_OTHER);
     }
 }

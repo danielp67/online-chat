@@ -3,7 +3,17 @@
 {% block title %}Room index{% endblock %}
 
 {% block body %}
-    <h1>Room index</h1>
+<div class="row g-0">
+    <div class="col-3 bg-primary vh-100 fixed-top">
+
+
+    </div>
+    <div class="col-9 offset-3">
+        <div class="col-9 offset-3 fixed-top bg-white">
+
+            <h1>Room index</h1>
+        </div>
+        <div class="mt-5">
 
     <table class="table">
         <thead>
@@ -24,6 +34,9 @@
 
                     {% if user.id == room.createBy.id %}
                         <a href="{{ path('app_room_edit', {'id': room.id}) }}">edit</a>
+
+                        {{ include('room/_delete_form.html.twig') }}
+
                     {% endif %}
                 </td>
             </tr>
@@ -35,5 +48,11 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_room_new') }}">Create new</a>
+
+    <a href="{{ path('app_room_new') }}" class="btn btn-danger"><i class="fa fa-plus" aria-hidden="true"></i>
+        </a>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
