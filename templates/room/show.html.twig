@@ -53,12 +53,11 @@
         {% endfor %}
 
 
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
+                {{ include('message/_form.html.twig') }}
 
 
-    </div>
+
+            </div>
     </div>
     </div>
 {% endblock %}
