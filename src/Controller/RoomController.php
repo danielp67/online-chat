@@ -33,7 +33,10 @@ class RoomController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $room->setCreateBy($this->getUser());
+
             $roomRepository->save($room, true);
+          //  dd($room);
 
             return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);
         }

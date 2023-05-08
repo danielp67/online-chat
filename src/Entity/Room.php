@@ -15,58 +15,27 @@ class Room
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(mappedBy: 'room', targetEntity: User::class)]
-    private Collection $user;
-
     #[ORM\OneToMany(mappedBy: 'room', targetEntity: Message::class)]
     private Collection $message;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: User::class)]
+    private Collection $users;
+
+    #[ORM\ManyToOne(inversedBy: 'rooms')]
     private ?User $createBy = null;
 
     public function __construct()
     {
-        $this->user = new ArrayCollection();
         $this->message = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUser(): Collection
-    {
-        return $this->user;
-    }
-
-    public function addUser(User $user): self
-    {
-        if (!$this->user->contains($user)) {
-            $this->user->add($user);
-            $user->setRoom($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->user->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getRoom() === $this) {
-                $user->setRoom(null);
-            }
-        }
-
-        return $this;
     }
 
     /**
@@ -111,15 +80,46 @@ class Room
         return $this;
     }
 
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getRoom() === $this) {
+                $user->setRoom(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function getCreateBy(): ?User
     {
         return $this->createBy;
     }
 
-    public function setCreateBy(User $createBy): self
+    public function setCreateBy(?User $createBy): self
     {
         $this->createBy = $createBy;
 
         return $this;
     }
+
 }

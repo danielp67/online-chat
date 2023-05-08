@@ -66,12 +66,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Message::class)]
     private Collection $messages;
 
-    #[ORM\ManyToOne(inversedBy: 'user')]
+    #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Room $room = null;
+
+    #[ORM\OneToMany(mappedBy: 'createBy', targetEntity: Room::class)]
+    private Collection $rooms;
 
     public function __construct()
     {
         $this->messages = new ArrayCollection();
+        $this->rooms = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -186,6 +190,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function __toString(): string
+    {
+       return $this->username;
+    }
+
     public function getRoom(): ?Room
     {
         return $this->room;
@@ -198,8 +207,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function __toString(): string
+    /**
+     * @return Collection<int, Room>
+     */
+    public function getRooms(): Collection
     {
-       return $this->username;
+        return $this->rooms;
     }
+
+    public function addRoom(Room $room): self
+    {
+        if (!$this->rooms->contains($room)) {
+            $this->rooms->add($room);
+            $room->setCreateBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoom(Room $room): self
+    {
+        if ($this->rooms->removeElement($room)) {
+            // set the owning side to null (unless already changed)
+            if ($room->getCreateBy() === $this) {
+                $room->setCreateBy(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
