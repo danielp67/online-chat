@@ -11,7 +11,10 @@
     <div class="col-9 offset-3">
         <div class="col-9 offset-3 fixed-top bg-white">
 
-            <h1>Room index</h1>
+            <h1>Room index
+            <a href="{{ path('app_room_new') }}" class="btn btn-danger"><i class="fa fa-plus" aria-hidden="true"></i>
+            </a>
+            </h1>
         </div>
         <div class="mt-5">
 
@@ -30,10 +33,13 @@
                 <td>{{ room.name }}</td>
 
                 <td>
-                    <a href="{{ path('app_room_show', {'id': room.id}) }}">enter</a>
+                    <a class="btn btn-primary" href="{{ path('app_room_show', {'id': room.id}) }}"><i class="fa fa-sign-in" aria-hidden="true"></i>
+                    </a>
 
                     {% if user.id == room.createBy.id %}
-                        <a href="{{ path('app_room_edit', {'id': room.id}) }}">edit</a>
+                        <a href="{{ path('app_room_edit', {'id': room.id}) }}">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </a>
 
                         {{ include('room/_delete_form.html.twig') }}
 
@@ -49,8 +55,7 @@
     </table>
 
 
-    <a href="{{ path('app_room_new') }}" class="btn btn-danger"><i class="fa fa-plus" aria-hidden="true"></i>
-        </a>
+
         </div>
 
     </div>

@@ -7,7 +7,6 @@
 
     {{ include('room/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('app_room_index') }}">back to list</a>
-
-    {{ include('room/_delete_form.html.twig') }}
+    <a class="btn btn-danger" href="{{ path('app_room_index') }}"><i class="fa fa-times" aria-hidden="true"></i>
+    </a>
 {% endblock %}

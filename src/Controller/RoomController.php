@@ -92,7 +92,7 @@ class RoomController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_room_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_room_delete', methods: ['GET','POST'])]
     public function delete(Request $request, Room $room, RoomRepository $roomRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$room->getId(), $request->request->get('_token'))) {

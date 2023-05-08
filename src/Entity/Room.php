@@ -15,7 +15,7 @@ class Room
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Message::class)]
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Message::class, cascade: ['persist', 'remove'])]
     private Collection $message;
 
     #[ORM\Column(length: 255)]
