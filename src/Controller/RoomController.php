@@ -11,6 +11,8 @@ use App\Repository\RoomRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/app/room')]
@@ -26,8 +28,8 @@ class RoomController extends AbstractController
     }
 
     #[Route('/new', name: 'app_room_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, RoomRepository $roomRepository): Response
-    {
+    public function new(Request $request, RoomRepository $roomRepository, HubInterface $hub): Response
+    {dd($hub);
         $room = new Room();
         $form = $this->createForm(RoomType::class, $room);
         $form->handleRequest($request);
@@ -100,5 +102,19 @@ class RoomController extends AbstractController
         }
 
         return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/publish', name: 'app_room_publish', methods: ['GET', 'POST'])]
+    public function publish(Request $request, Room $room, HubInterface $hub): Response
+    {
+        //dd($hub);
+        $update = new Update(
+            'https://example.com/books/1',
+            json_encode(['status' => 'OutOfStock'])
+        );
+
+        $hub->publish($update);
+
+        return new Response('published!');
     }
 }
