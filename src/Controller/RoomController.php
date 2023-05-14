@@ -14,6 +14,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 #[Route('/app/room')]
 class RoomController extends AbstractController
@@ -50,7 +58,9 @@ class RoomController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_room_show', methods: ['GET', 'POST'])]
-    public function show(Request $request, Room $room, MessageRepository $messageRepository): Response
+    public function show(Request $request, Room $room, MessageRepository $messageRepository,
+    HubInterface $hub
+    ): Response
     {
         $message = new Message();
         $form = $this->createForm(MessageType::class, $message);
@@ -63,6 +73,32 @@ class RoomController extends AbstractController
             $message->setUser($this->getUser());
 
             $messageRepository->save($message, true);
+            $dateContext = array(DateTimeNormalizer::FORMAT_KEY => 'd/m/Y');
+            $encoders = [new XmlEncoder(), new JsonEncoder()];
+            $normalizers = [new ObjectNormalizer(), new ArrayDenormalizer(), new DateTimeNormalizer()];
+
+            $serializer = new Serializer($normalizers, $encoders);
+
+            $data = $serializer->normalize($message, null, [
+                AbstractNormalizer::GROUPS => ['read:message'],
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => ['user','room', 'rooms', 'createdAt']
+
+                ]
+            );
+
+            $data = json_encode(
+            [ 'username' =>   $message->getUser()->getUsername(),
+               'createdAt' => $message->getCreatedAt()->format('Y-m-d H:i:s'),
+                'content' => $message->getContent()
+            ]
+            );
+
+            $update = new Update(
+                'https://example.com/app/room/' . $room->getId(),
+                $data
+            );
+
+            $hub->publish($update);
             return $this->redirectToRoute('app_room_show', ['id' => $room->getId()]);
 
         }
@@ -107,14 +143,16 @@ class RoomController extends AbstractController
     #[Route('/{id}/publish', name: 'app_room_publish', methods: ['GET', 'POST'])]
     public function publish(Request $request, Room $room, HubInterface $hub): Response
     {
-        //dd($hub);
+        //dd($room);
         $update = new Update(
-            'https://example.com/books/1',
+            'https://example.com/app/room/' . $room->getId(),
             json_encode(['status' => 'OutOfStock'])
         );
 
         $hub->publish($update);
 
-        return new Response('published!');
+        return $this->redirectToRoute('app_room_show', ['id' => $room->getId()]);
+
+      //  return new Response('published!');
     }
 }
