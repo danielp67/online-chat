@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+<div class="row g-0">
+    <div class="col-3 bg-info vh-100 fixed-top">
+        <h3>Online Chat
+            <a href="{{ path('app_room_new') }}" class="btn btn-danger"><i class="fa fa-plus" aria-hidden="true"></i>
+            </a>
+        </h3>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+
+        {% for room in rooms %}
+            <tr>
+                <td>
+                    <a class="" href="{{ path('app_room_show', {'id': room.id}) }}">
+
+                        {{ room.id }} - {{ room.name }}
+                    </a>
+
+
+                </td>
+            </tr>
+
+        {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-9 offset-3">
+        <div class="bg-info col-9 offset-3 fixed-top pt-4">
+            {% block subtitle %}No chat room selected{% endblock %}
+
+        </div>
+        <div class="mt-5 text-center">
+
+            {% block messages %}            No chat room selected
+            {% endblock %}
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
