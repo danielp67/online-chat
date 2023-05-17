@@ -23,9 +23,19 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-#[Route('/app/room')]
+#[Route('/app')]
 class RoomController extends AbstractController
 {
+
+    #[Route('/', name: 'app_home', methods: ['GET'])]
+    public function home(RoomRepository $roomRepository): Response
+    {
+        return $this->render('base.html.twig', [
+            'rooms' => $roomRepository->findAll(),
+            'user' => $this->getUser()
+        ]);
+    }
+
     #[Route('/home', name: 'app_room_home', methods: ['GET'])]
     public function index(RoomRepository $roomRepository): Response
     {

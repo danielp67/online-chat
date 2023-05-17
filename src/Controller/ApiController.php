@@ -17,4 +17,13 @@ class ApiController extends AbstractController
         dd($listOfRoom);
         return $this->json(["listOfRoom" => $listOfRoom, "user" => $this->getUser()]);
     }
+
+    #[Route('/api/room', name: 'api_room')]
+    public function getAllRooms(RoomRepository $roomRepository): Response
+    {
+        $listOfRoom = $roomRepository->findAll();
+
+        //dd($listOfRoom);
+        return $this->json(["listOfRoom" => $listOfRoom, "user" => $this->getUser()]);
+    }
 }
