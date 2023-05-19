@@ -2,6 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\RoomRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,24 +15,39 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
+#[ApiResource(operations: [
+    new Get(),
+    new Patch(denormalizationContext: ['groups' => ['patch:room']]),
+    new Delete(),
+    new GetCollection(normalizationContext: ['groups' => ['getCollection:room']]),
+    new Post(denormalizationContext: ['groups' => ['post:room']])
+],
+
+    normalizationContext: ['groups' => ['get:room']],
+
+)]
 class Room
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["read:message"])]
+    #[Groups(['getCollection:room', 'get:room'])]
     private ?int $id = null;
 
     #[ORM\OneToMany(mappedBy: 'room', targetEntity: Message::class, cascade: ['persist', 'remove'])]
+    #[Groups(['get:room'])]
     private Collection $message;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['getCollection:room', 'get:room', 'post:room', 'patch:room'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'room', targetEntity: User::class)]
+    #[Groups(['get:room'])]
     private Collection $users;
 
     #[ORM\ManyToOne(inversedBy: 'rooms')]
+    #[Groups(['get:room', 'post:room'])]
     private ?User $createBy = null;
 
     public function __construct()

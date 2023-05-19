@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 class Message
@@ -13,23 +12,21 @@ class Message
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["read:message"])]
-    /**
-     * @Groups("read:message")
-     */
+    #[Groups(['get:room'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["read:message"])]
+    #[Groups(['get:room'])]
     private ?string $content = null;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups('read:message')]
+    #[Groups(['get:room'])]
     private ?\DateTimeInterface $createdAt = null;
 
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['get:room'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'message')]
