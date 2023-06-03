@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\RoomRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
 #[ApiResource(operations: [
     new Get(),
-    new Patch(denormalizationContext: ['groups' => ['patch:room']]),
+    new Put(denormalizationContext: ['groups' => ['put:room']]),
     new Delete(),
     new GetCollection(normalizationContext: ['groups' => ['getCollection:room']]),
     new Post(denormalizationContext: ['groups' => ['post:room']])
@@ -39,7 +40,7 @@ class Room
     private Collection $message;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['getCollection:room', 'get:room', 'post:room', 'patch:room'])]
+    #[Groups(['getCollection:room', 'get:room', 'post:room', 'put:room'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'room', targetEntity: User::class)]
