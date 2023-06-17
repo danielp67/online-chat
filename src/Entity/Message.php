@@ -2,37 +2,58 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
+#[ApiResource(operations: [
+    new Get(),
+    new Put(denormalizationContext: ['groups' => ['put:message']]),
+    new Delete(),
+    new Post(denormalizationContext: ['groups' => ['post:message']])
+],
+
+    normalizationContext: ['groups' => ['get:message']],
+
+)]
 class Message
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get:room'])]
+    #[Groups(['get:room', 'get:message'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['get:room'])]
+    #[Groups(['get:room', 'get:message', 'post:message', 'put:message'])]
     private ?string $content = null;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups(['get:room'])]
+    #[Groups(['get:room', 'get:message'])]
     private ?\DateTimeInterface $createdAt = null;
 
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['get:room'])]
+    #[Groups(['get:room', 'get:message', 'post:message'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'message')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["read:message"])]
+    #[Groups(['get:room', 'get:message', 'post:message'])]
     private ?Room $room = null;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+    }
 
     public function getId(): ?int
     {

@@ -7,8 +7,8 @@ function App(){
         return (
             <Router>
                 <Routes>
-                    <Route path="/app/rooms/:roomId" element={<Room/>}/>
                     <Route path="/app" element={<Home/>}/>
+                    <Route path="/app/rooms/:roomId" element={<Room/>}/>
 
                     {/* <Route path="/app/sport/:sportName" exact component={SelectedSport} />
                     <Route path="/app/:roomId exact component={SelectedEvent} />

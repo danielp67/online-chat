@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import RoomRow from "./RoomRow";
 
-const AsideLeft = ({state, setNewRoom}) => {
+const AsideLeft = ({state, createRoom}) => {
 
     const [roomName, setRoomName] = useState('')
     const handleChange = (e) => {
@@ -9,7 +9,7 @@ const AsideLeft = ({state, setNewRoom}) => {
     }
 
     const handleClick = () => {
-        setNewRoom(roomName)
+        createRoom(roomName)
     }
     return (
 <>

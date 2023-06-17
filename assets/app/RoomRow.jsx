@@ -5,7 +5,7 @@ const RoomRow = ({room}) => {
     return (
         <tr>
             <td>
-                <a className="" href={`rooms/${room.id}`}>
+                <a className="" href={`/app/rooms/${room.id}`}>
                     {room.id} - {room.name}
                 </a>
             </td>

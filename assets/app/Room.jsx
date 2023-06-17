@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import AsideLeft from "./AsideLeft";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import RoomBottom from "./RoomBottom";
 import MessageBlock from "./MessageBlock";
 
@@ -15,6 +15,7 @@ const Room = () => {
     })
     const [loading, setLoading] = useState(false)
     const {roomId} = useParams()
+    const navigate = useNavigate();
 
 
     const fetchAllRooms = () => {
@@ -55,13 +56,8 @@ const Room = () => {
                 roomName : e.target.value}})
     }
 
-    const setNewMessage = () => {
 
-console.log("tests")
-
-    }
-
-    const setNewRoom = (props) => {
+    const createRoom = (props) => {
 
         console.log(props, JSON.stringify({name: props, createBy: "api/users/" + state.createBy}))
         const url = `/api/rooms` ;
@@ -83,6 +79,7 @@ console.log("tests")
                         ...prevState,
                         selectedRoom : json}})
                 fetchAllRooms()
+                navigate("/app/rooms/" + json.id)
             });
     }
 
@@ -113,18 +110,44 @@ console.log("tests")
 
         const url = `/api/rooms/`+ roomId ;
 
-        fetch(url, {method: 'get'})
+        fetch(url, {method: 'DELETE'})
             .then(function (response) {
-                return response.json();
+                console.log(response)
+                fetchAllRooms()
+
+                return true
             })
+        navigate("/app/rooms/1");
+    }
+
+
+    const createMessage = (props) => {
+
+        console.log(props, state)
+        /*console.log(props, JSON.stringify({name: props, createBy: "api/users/" + state.createBy}))
+        const url = `/api/rooms` ;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/ld+json',
+                'Content-Type': 'application/ld+json'
+            },
+            body: JSON.stringify({name: props, createBy: "api/users/" + state.createBy})
+        })            .then(function (response) {
+            return response.json();
+        })
             .then(json => {
                 console.log(json)
-                setState( {selectedRoom: json })
-                setLoading(true)
-                // this.displayItemFromCart();
-
-            });
+                setState(prevState =>{
+                    return{
+                        ...prevState,
+                        selectedRoom : json}})
+                fetchAllRooms()
+                navigate("/app/rooms/" + json.id)
+            });*/
     }
+
 
     if(!loading){
     fetchSelectedRoom()
@@ -135,14 +158,17 @@ console.log("tests")
 
             return (
                 <>
-                    <AsideLeft state={state} setNewRoom={setNewRoom} />
+                    <AsideLeft state={state} createRoom={createRoom} />
 
                     <div className="col-9 offset-3">
                         <div className="bg-info col-9 offset-3 fixed-top pt-4">
 
                             {state.selectedRoom.id} - {state.selectedRoom.name}
-                            <i className="btn fa fa-pencil" aria-hidden="true"/>
+                            <i className="btn fa fa-pencil" aria-hidden="true" onClick={''}/>
+                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+
                             <i className="btn fa fa-trash" aria-hidden="true"/>
+                            </button>
 
 
                             <div className="input-group mb-3">
@@ -161,9 +187,27 @@ console.log("tests")
                     <MessageBlock selectedRoom={state.selectedRoom}/>
 
 
-                    <RoomBottom setNewMessage={setNewMessage}/>
+                    <RoomBottom createMessage={createMessage}/>
                     </div>
-
+                    <div className="modal fade" id="exampleModal2" tabIndex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h1 className="modal-title fs-5" id="exampleModalLabel2">New Room</h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                                </div>
+                                <div className="modal-body">
+                                    Are you sure you want to delete the room ?
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={deleteRoom}>
+                                                Continue
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </>
 
             )}

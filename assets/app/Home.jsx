@@ -12,7 +12,7 @@ class Home extends Component{
     }
 
     componentDidMount() {
-
+console.log("test")
         this.fetchAllRooms();
     }
 
@@ -45,7 +45,6 @@ class Home extends Component{
 
             return (
                 <>
-                    <AsideLeft rooms={this.state.rooms} />
                     <RoomBottom setNewMessage={this.setNewMessage}/>
 
                 </>

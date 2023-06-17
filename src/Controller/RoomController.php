@@ -34,125 +34,18 @@ class RoomController extends AbstractController
         ]);
     }
 
+    #[Route('/rooms', name: 'app_room', methods: ['GET'])]
+    public function room(RoomRepository $roomRepository): Response
+    {
+        return $this->render('base.html.twig', [
+        ]);
+    }
+
     #[Route('/rooms/{id}', name: 'app_index', methods: ['GET'])]
     public function index(RoomRepository $roomRepository): Response
     {
         return $this->render('base.html.twig', [
         ]);
     }
-
-    /*   #[Route('/home', name: 'app_room_home', methods: ['GET'])]
-     public function index(RoomRepository $roomRepository): Response
-     {
-         return $this->render('room/home.html.twig', [
-             'rooms' => $roomRepository->findAll(),
-             'user' => $this->getUser()
-         ]);
-     }
-
-   #[Route('/new', name: 'app_room_new', methods: ['GET', 'POST'])]
-     public function new(Request $request, RoomRepository $roomRepository, HubInterface $hub): Response
-     {
-         $room = new Room();
-         $form = $this->createForm(RoomType::class, $room);
-         $form->handleRequest($request);
-
-         if ($form->isSubmitted() && $form->isValid()) {
-             $room->setCreateBy($this->getUser());
-
-             $roomRepository->save($room, true);
-           //  dd($room);
-
-             return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);
-         }
-
-         return $this->renderForm('room/new.html.twig', [
-             'room' => $room,
-             'form' => $form,
-         ]);
-     }
-
-     #[Route('/{id}', name: 'app_room_show', methods: ['GET', 'POST'])]
-     public function show(Request $request, Room $room, MessageRepository $messageRepository,
-     HubInterface $hub
-     ): Response
-     {
-         $message = new Message();
-         $form = $this->createForm(MessageType::class, $message);
-
-         $form->handleRequest($request);
-
-         if ($form->isSubmitted() && $form->isValid()) {
-             $message->setCreatedAt(new \DateTime());
-             $message->setRoom($room);
-             $message->setUser($this->getUser());
-
-             $messageRepository->save($message, true);
-             $dateContext = array(DateTimeNormalizer::FORMAT_KEY => 'd/m/Y');
-             $encoders = [new XmlEncoder(), new JsonEncoder()];
-             $normalizers = [new ObjectNormalizer(), new ArrayDenormalizer(), new DateTimeNormalizer()];
-
-             $serializer = new Serializer($normalizers, $encoders);
-
-             $data = $serializer->normalize($message, null, [
-                 AbstractNormalizer::GROUPS => ['read:message'],
-                     AbstractNormalizer::IGNORED_ATTRIBUTES => ['user','room', 'rooms', 'createdAt']
-
-                 ]
-             );
-
-             $data = json_encode(
-             [ 'username' => $message->getUser()->getUsername(),
-                'createdAt' => $message->getCreatedAt()->format('Y-m-d H:i:s'),
-                 'content' => $message->getContent()
-             ]
-             );
-
-             $update = new Update(
-                 'https://example.com/app/room/' . $room->getId(),
-                 $data
-             );
-
-             $hub->publish($update);
-             return $this->redirectToRoute('app_room_show', ['id' => $room->getId()]);
-
-         }
-
-         return $this->render('room/show.html.twig', [
-             'room' => $room,
-             'user' => $this->getUser(),
-             'messages' => $messageRepository->findby(['room' => $room],['createdAt' => 'ASC']),
-             'form' => $form,
-
-         ]);
-     }
-
-     #[Route('/{id}/edit', name: 'app_room_edit', methods: ['GET', 'POST'])]
-     public function edit(Request $request, Room $room, RoomRepository $roomRepository): Response
-     {
-         $form = $this->createForm(RoomType::class, $room);
-         $form->handleRequest($request);
-
-         if ($form->isSubmitted() && $form->isValid()) {
-             $roomRepository->save($room, true);
-
-             return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);
-         }
-
-         return $this->renderForm('room/edit.html.twig', [
-             'room' => $room,
-             'form' => $form,
-         ]);
-     }
-
-     #[Route('/{id}/delete', name: 'app_room_delete', methods: ['GET','POST'])]
-     public function delete(Request $request, Room $room, RoomRepository $roomRepository): Response
-     {
-         if ($this->isCsrfTokenValid('delete'.$room->getId(), $request->request->get('_token'))) {
-             $roomRepository->remove($room, true);
-         }
-
-         return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);
-     }*/
 
 }
