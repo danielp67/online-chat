@@ -1,24 +1,18 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import AsideLeft from "./AsideLeft";
-import RoomBottom from "./RoomBottom";
+import {useNavigate} from "react-router-dom";
 
-class Home extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            rooms: [],
-            loading:false,
-        }
-    }
+const Home = () => {
+    const [state, setState] = useState({
+        rooms: []
+    })
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate();
 
-    componentDidMount() {
-console.log("test")
-        this.fetchAllRooms();
-    }
 
-    fetchAllRooms = () => {
-        this.setState({loading: false});
-        const url = `/api/rooms`;
+    const fetchHome = () => {
+
+        const url = `/api/home`;
 
         fetch(url, {method: 'get'})
             .then(function (response) {
@@ -26,26 +20,59 @@ console.log("test")
             })
             .then(json => {
                 console.log(json)
-                this.setState({ rooms: json["hydra:member"], loading:true})
-
+                setState({ rooms: json.rooms})
+                setLoading(true)
                 // this.displayItemFromCart();
 
+
+                const User = {
+                   "user": json.user
+                }
+
+                const UserContext = React.createContext({
+                    user: User,
+                });
+                console.log(UserContext)
             });
     }
 
+   const createRoom = (props) => {
 
-    setNewMessage = () => {
+        console.log(props, JSON.stringify({name: props, createBy: "api/users/" + state.createBy}))
+        const url = `/api/rooms` ;
 
-        console.log("tests")
-
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/ld+json',
+                'Content-Type': 'application/ld+json'
+            },
+            body: JSON.stringify({name: props, createBy: "api/users/" + state.createBy})
+        })            .then(function (response) {
+            return response.json();
+        })
+            .then(json => {
+                console.log(json)
+                setState(prevState =>{
+                    return{
+                        ...prevState,
+                        selectedRoom : json}})
+                //fetchAllRooms()
+                navigate("/app/rooms/" + json.id)
+            });
     }
 
-    render() {
-        if(this.state.loading){
+    if(!loading){
+        fetchHome()
+    }
+
+
+        if(loading){
 
             return (
                 <>
-                    <RoomBottom setNewMessage={this.setNewMessage}/>
+                    <AsideLeft state={state} createRoom={createRoom} />
+
 
                 </>
 
@@ -53,7 +80,7 @@ console.log("test")
 else{
     return <>waiting</>
             }
-    }
+
 
 }
 

@@ -1,22 +1,36 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import AsideLeft from "./AsideLeft";
 import {useNavigate, useParams} from "react-router-dom";
 import RoomBottom from "./RoomBottom";
 import MessageBlock from "./MessageBlock";
+import Modal from "./Modal";
 
 const Room = () => {
     const [state, setState] = useState({
         selectedRoom: {},
-        user:'',
+        user: null,
         roomName:'',
-        createBy: 1,
-        newMessage:'',
         rooms: []
     })
     const [loading, setLoading] = useState(false)
     const {roomId} = useParams()
     const navigate = useNavigate();
 
+    const fetchHome = () => {
+
+        const url = `/api/home`;
+
+        fetch(url, {method: 'get'})
+            .then(function (response) {
+                return response.json();
+            })
+            .then(json => {
+                setState(prevState =>{
+                    return{
+                        ...prevState,
+                        rooms: json.rooms, user: json.user}})
+            });
+    }
 
     const fetchAllRooms = () => {
         const url = `/api/rooms`;
@@ -59,7 +73,7 @@ const Room = () => {
 
     const createRoom = (props) => {
 
-        console.log(props, JSON.stringify({name: props, createBy: "api/users/" + state.createBy}))
+        console.log(props, state, JSON.stringify({name: props, createBy: "api/users/" + state.user.id}))
         const url = `/api/rooms` ;
 
         fetch(url, {
@@ -68,7 +82,7 @@ const Room = () => {
                 'Accept': 'application/ld+json',
                 'Content-Type': 'application/ld+json'
             },
-            body: JSON.stringify({name: props, createBy: "api/users/" + state.createBy})
+            body: JSON.stringify({name: props, createBy: "api/users/" + state.user.id})
         })            .then(function (response) {
             return response.json();
         })
@@ -124,8 +138,7 @@ const Room = () => {
     const createMessage = (props) => {
 
         console.log(props, state)
-        /*console.log(props, JSON.stringify({name: props, createBy: "api/users/" + state.createBy}))
-        const url = `/api/rooms` ;
+        const url = `/api/messages` ;
 
         fetch(url, {
             method: 'POST',
@@ -133,23 +146,42 @@ const Room = () => {
                 'Accept': 'application/ld+json',
                 'Content-Type': 'application/ld+json'
             },
-            body: JSON.stringify({name: props, createBy: "api/users/" + state.createBy})
+            body: JSON.stringify(
+                {
+                    content: props,
+                    user: "api/users/" + state.user.id,
+                    room: "api/rooms/"+ state.selectedRoom.id
+                })
         })            .then(function (response) {
             return response.json();
         })
             .then(json => {
                 console.log(json)
-                setState(prevState =>{
-                    return{
-                        ...prevState,
-                        selectedRoom : json}})
-                fetchAllRooms()
-                navigate("/app/rooms/" + json.id)
-            });*/
+                fetchSelectedRoom()
+            });
     }
 
 
+    const deleteMessage = (props) => {
+
+        const url = `/api/messages/` ;
+
+        /*fetch(url, {method: 'DELETE'})
+            .then(function (response) {
+                console.log(response)
+                fetchAllRooms()
+                return true
+            })*/
+    }
+
+
+    if(state.user === null)
+    {
+        fetchHome()
+    }
+
     if(!loading){
+
     fetchSelectedRoom()
     }
 
@@ -166,7 +198,6 @@ const Room = () => {
                             {state.selectedRoom.id} - {state.selectedRoom.name}
                             <i className="btn fa fa-pencil" aria-hidden="true" onClick={''}/>
                             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2">
-
                             <i className="btn fa fa-trash" aria-hidden="true"/>
                             </button>
 
@@ -177,7 +208,6 @@ const Room = () => {
                                        className="form-control" aria-describedby="button-addon2" />
                                 <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={updateRoom}>
                                     <i className="fa fa-send" aria-hidden="true"/>
-
                                 </button>
                             </div>
 
@@ -189,25 +219,9 @@ const Room = () => {
 
                     <RoomBottom createMessage={createMessage}/>
                     </div>
-                    <div className="modal fade" id="exampleModal2" tabIndex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-                        <div className="modal-dialog">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h1 className="modal-title fs-5" id="exampleModalLabel2">New Room</h1>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
-                                </div>
-                                <div className="modal-body">
-                                    Are you sure you want to delete the room ?
-                                </div>
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={deleteRoom}>
-                                                Continue
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <Modal value={'room'} deleteFunc={deleteRoom} />
+                    <Modal value={'message'} deleteFunc={deleteMessage} />
+
                 </>
 
             )}

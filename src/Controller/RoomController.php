@@ -27,7 +27,7 @@ use Symfony\Component\Serializer\Serializer;
 class RoomController extends AbstractController
 {
 
-    #[Route('/', name: 'app_home', methods: ['GET'])]
+    #[Route('/home', name: 'app_home', methods: ['GET'])]
     public function home(RoomRepository $roomRepository): Response
     {
         return $this->render('base.html.twig', [

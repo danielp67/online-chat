@@ -6,24 +6,19 @@ use App\Repository\RoomRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class ApiController extends AbstractController
 {
     #[Route('/api/home', name: 'api_home')]
-    public function showRoom(RoomRepository $roomRepository): Response
+    public function apiHome(RoomRepository $roomRepository): Response
     {
-        $listOfRoom = $roomRepository->findAll();
+        $rooms = $roomRepository->findAll();
 
-        dd($listOfRoom);
-        return $this->json(["listOfRoom" => $listOfRoom, "user" => $this->getUser()]);
+        return $this->json([
+            "rooms" => $rooms,
+            "user" => $this->getUser()
+        ],200, [''], [AbstractNormalizer::GROUPS => ['getCollection:room', 'get:user']]);
     }
 
-    #[Route('/api/room', name: 'api_room')]
-    public function getAllRooms(RoomRepository $roomRepository): Response
-    {
-        $listOfRoom = $roomRepository->findAll();
-
-        //dd($listOfRoom);
-        return $this->json(["listOfRoom" => $listOfRoom, "user" => $this->getUser()]);
-    }
 }
