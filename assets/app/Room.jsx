@@ -9,8 +9,9 @@ const Room = () => {
     const [state, setState] = useState({
         selectedRoom: {},
         user: null,
-        roomName:'',
-        rooms: []
+        roomName: '',
+        rooms: [],
+        displayForm:false
     })
     const [loading, setLoading] = useState(false)
     const {roomId} = useParams()
@@ -57,7 +58,7 @@ const Room = () => {
                 setState(prevState =>{
                     return{
                         ...prevState,
-                        selectedRoom: json}})
+                        selectedRoom: json, roomName:json.name}})
                 setLoading(true)
             });
         fetchAllRooms()
@@ -67,7 +68,7 @@ const Room = () => {
         setState(prevState =>{
             return{
                 ...prevState,
-                roomName : e.target.value}})
+                content : e.target.value}})
     }
 
 
@@ -100,7 +101,7 @@ const Room = () => {
     const updateRoom = () => {
 
         const url = `/api/rooms/`+ roomId ;
-
+console.log(state)
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -115,7 +116,7 @@ const Room = () => {
                 setState(prevState =>{
                     return{
                         ...prevState,
-                        selectedRoom : json}})
+                        selectedRoom : json, displayForm: false}})
                 fetchAllRooms()
             });
     }
@@ -161,19 +162,13 @@ const Room = () => {
             });
     }
 
+    const displayForm = (props) => {
 
-    const deleteMessage = (props) => {
-
-        const url = `/api/messages/` ;
-
-        /*fetch(url, {method: 'DELETE'})
-            .then(function (response) {
-                console.log(response)
-                fetchAllRooms()
-                return true
-            })*/
+            setState(prevState =>{
+                return{
+                    ...prevState,
+                    displayForm : props}})
     }
-
 
     if(state.user === null)
     {
@@ -194,33 +189,31 @@ const Room = () => {
 
                     <div className="col-9 offset-3">
                         <div className="bg-info col-9 offset-3 fixed-top pt-4">
-
+                            <div className={state.displayForm ? "d-none" : "d-block"}>
                             {state.selectedRoom.id} - {state.selectedRoom.name}
-                            <i className="btn fa fa-pencil" aria-hidden="true" onClick={''}/>
-                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2">
-                            <i className="btn fa fa-trash" aria-hidden="true"/>
-                            </button>
+                            <i className="btn fa fa-pencil" aria-hidden="true" onClick={()=>displayForm(true)}/>
+                            <i className="btn fa fa-trash" aria-hidden="true" data-bs-toggle="modal" data-bs-target={'#message'+  + roomId} />
+                            </div>
+                            <div className={!state.displayForm ? "d-none" : "input-group"}>
 
-
-                            <div className="input-group mb-3">
+                             {state.selectedRoom.id} -
                                 <input type="text" name="room" value={state.roomName}
                                        onChange={handleChange}
-                                       className="form-control" aria-describedby="button-addon2" />
-                                <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={updateRoom}>
-                                    <i className="fa fa-send" aria-hidden="true"/>
-                                </button>
-                            </div>
+                                       className="" />
 
+                                       <i className="fa fa-send" aria-hidden="true" onClick={updateRoom}/>
+                                <i className="btn fa fa-times" aria-hidden="true" onClick={()=>displayForm(false)}/>
+
+                            </div>
                         </div>
 
 
-                    <MessageBlock selectedRoom={state.selectedRoom}/>
+                    <MessageBlock selectedRoom={state.selectedRoom} fetchSelectedRoom={fetchSelectedRoom}/>
 
 
                     <RoomBottom createMessage={createMessage}/>
                     </div>
-                    <Modal value={'room'} deleteFunc={deleteRoom} />
-                    <Modal value={'message'} deleteFunc={deleteMessage} />
+                    <Modal value={'room'} id={'room'+ roomId} deleteFunc={deleteRoom} />
 
                 </>
 
