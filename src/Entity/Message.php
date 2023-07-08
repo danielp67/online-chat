@@ -19,8 +19,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new Delete(),
     new Post(denormalizationContext: ['groups' => ['post:message']])
 ],
-
     normalizationContext: ['groups' => ['get:message']],
+    mercure: true
 
 )]
 class Message

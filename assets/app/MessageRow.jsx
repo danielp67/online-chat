@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import moment from "moment";
 import Modal from "./Modal";
 
-const MessageRow = ({message, fetchSelectedRoom}) => {
+const MessageRow = ({message, refreshSelectedRoom}) => {
 let user = {
     "@context": "/api/contexts/User",
     "@id": "/api/users/1",
@@ -56,11 +56,11 @@ let user = {
     const deleteMessage = () => {
 
         const url = `/api/messages/` + message.id;
-
+console.log(url)
         fetch(url, {method: 'DELETE'})
             .then(function (response) {
                 console.log(response)
-                fetchSelectedRoom()
+               refreshSelectedRoom()
                 return true
             })
     }

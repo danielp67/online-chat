@@ -50,8 +50,10 @@ const Room = () => {
 
         const fetchSelectedRoom = () => {
             const url = `/api/rooms/`+ roomId ;
-        fetch(url, {method: 'get'})
+
+            fetch(url, {method: 'get'})
             .then(function (response) {
+
                 return response.json();
             })
             .then(json => {
@@ -64,17 +66,25 @@ const Room = () => {
         fetchAllRooms()
     }
 
+
+    const refreshSelectedRoom = () => {
+        setLoading(false)
+
+        fetchSelectedRoom()
+
+
+    }
+
     const handleChange = (e) => {
         setState(prevState =>{
             return{
                 ...prevState,
-                content : e.target.value}})
+                roomName : e.target.value}})
     }
 
 
     const createRoom = (props) => {
 
-        console.log(props, state, JSON.stringify({name: props, createBy: "api/users/" + state.user.id}))
         const url = `/api/rooms` ;
 
         fetch(url, {
@@ -101,7 +111,6 @@ const Room = () => {
     const updateRoom = () => {
 
         const url = `/api/rooms/`+ roomId ;
-console.log(state)
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -137,10 +146,7 @@ console.log(state)
 
 
     const createMessage = (props) => {
-
-        console.log(props, state)
         const url = `/api/messages` ;
-
         fetch(url, {
             method: 'POST',
             headers: {
@@ -192,7 +198,7 @@ console.log(state)
                             <div className={state.displayForm ? "d-none" : "d-block"}>
                             {state.selectedRoom.id} - {state.selectedRoom.name}
                             <i className="btn fa fa-pencil" aria-hidden="true" onClick={()=>displayForm(true)}/>
-                            <i className="btn fa fa-trash" aria-hidden="true" data-bs-toggle="modal" data-bs-target={'#message'+  + roomId} />
+                            <i className="btn fa fa-trash" aria-hidden="true" data-bs-toggle="modal" data-bs-target={'#room'+  + roomId} />
                             </div>
                             <div className={!state.displayForm ? "d-none" : "input-group"}>
 
@@ -208,7 +214,7 @@ console.log(state)
                         </div>
 
 
-                    <MessageBlock selectedRoom={state.selectedRoom} fetchSelectedRoom={fetchSelectedRoom}/>
+                    <MessageBlock selectedRoom={state.selectedRoom} refreshSelectedRoom={refreshSelectedRoom}/>
 
 
                     <RoomBottom createMessage={createMessage}/>

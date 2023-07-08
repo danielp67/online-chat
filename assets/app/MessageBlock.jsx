@@ -1,7 +1,7 @@
 import React from 'react';
 import MessageRow from "./MessageRow";
 
-const MessageBlock = ({selectedRoom, fetchSelectedRoom}) => {
+const MessageBlock = ({selectedRoom, refreshSelectedRoom}) => {
 
     return (
         <>
@@ -10,7 +10,7 @@ const MessageBlock = ({selectedRoom, fetchSelectedRoom}) => {
                 selectedRoom.message.length > 0 ? selectedRoom.message.map((message, index) => {
 
                         return(
-                            <MessageRow key={index} message={message} fetchSelectedRoom={fetchSelectedRoom}/>
+                            <MessageRow key={index} message={message} refreshSelectedRoom={refreshSelectedRoom}/>
                         )
                     }) : null
                     }
