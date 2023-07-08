@@ -5,6 +5,18 @@ import RoomBottom from "./RoomBottom";
 import MessageBlock from "./MessageBlock";
 import Modal from "./Modal";
 
+
+    const eventSource = new EventSource("{{ mercure([
+    'https://127.0.0.1:8000/api/rooms/{id}',
+        'https://127.0.0.1:8000/api/messages/{id}',
+        'https://example.com/app/rooms/1',
+])|escape('js') }}");
+
+eventSource.onmessage = event => {
+    console.log(JSON.parse(event.data));
+}}
+
+
 const Room = () => {
     const [state, setState] = useState({
         selectedRoom: {},
@@ -176,6 +188,19 @@ const Room = () => {
                     displayForm : props}})
     }
 
+
+    useEffect(() => {
+        const eventSource = new EventSource(mercure([
+        'https://127.0.0.1:8000/api/rooms/{id}',
+            'https://127.0.0.1:8000/api/messages/{id}',
+            'https://example.com/app/rooms/1',
+    ]);
+        eventSource.onmessage = (e) => updateStockPrices(e.data);
+        return () => {
+            eventSource.close();
+        };
+    }, []);
+
     if(state.user === null)
     {
         fetchHome()
@@ -220,6 +245,7 @@ const Room = () => {
                     <RoomBottom createMessage={createMessage}/>
                     </div>
                     <Modal value={'room'} id={'room'+ roomId} deleteFunc={deleteRoom} />
+
 
                 </>
 

@@ -38,7 +38,7 @@ class RoomController extends AbstractController
             json_encode(['status' => 'OutOfStock'])
         );
 
-       // $hub->publish($update);
+        $hub->publish($update);
 
         return $this->render('base.html.twig', [
         ]);

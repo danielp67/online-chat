@@ -25,7 +25,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
     normalizationContext: ['groups' => ['get:room']],
     mercure: true
-
 )]
 class Room
 {

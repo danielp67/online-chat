@@ -24,8 +24,8 @@
     <script>
         {# Subscribe to updates of several Book resources and to all Review resources matching the given pattern #}
         const eventSource = new EventSource("{{ mercure([
-            'api/rooms/2',
-            'api/messages/{id}',
+            'https://127.0.0.1:8000/api/rooms/{id}',
+            'https://127.0.0.1:8000/api/messages/{id}',
             'https://example.com/app/rooms/1',
         ])|escape('js') }}");
 
