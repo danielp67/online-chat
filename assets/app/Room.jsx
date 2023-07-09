@@ -1,20 +1,10 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import AsideLeft from "./AsideLeft";
 import {useNavigate, useParams} from "react-router-dom";
 import RoomBottom from "./RoomBottom";
 import MessageBlock from "./MessageBlock";
 import Modal from "./Modal";
 
-
-    const eventSource = new EventSource("{{ mercure([
-    'https://127.0.0.1:8000/api/rooms/{id}',
-        'https://127.0.0.1:8000/api/messages/{id}',
-        'https://example.com/app/rooms/1',
-])|escape('js') }}");
-
-eventSource.onmessage = event => {
-    console.log(JSON.parse(event.data));
-}}
 
 
 const Room = () => {
@@ -188,16 +178,28 @@ const Room = () => {
                     displayForm : props}})
     }
 
+    const eventSourceMessage = new EventSource('https://localhost/.well-known/mercure?topic=https://127.0.0.1:8000/api/messages/{id}' )
+    const eventSourceRoom = new EventSource('https://localhost/.well-known/mercure?topic=https://127.0.0.1:8000/api/rooms/{id}' )
 
     useEffect(() => {
-        const eventSource = new EventSource(mercure([
-        'https://127.0.0.1:8000/api/rooms/{id}',
-            'https://127.0.0.1:8000/api/messages/{id}',
-            'https://example.com/app/rooms/1',
-    ]);
-        eventSource.onmessage = (e) => updateStockPrices(e.data);
+
+        eventSourceMessage.onmessage = event => {
+            console.log(event, JSON.parse(event.data));
+           // setLoading(false)
+
+            fetchSelectedRoom()
+        }
+
+        eventSourceRoom.onmessage = event => {
+            console.log(event, JSON.parse(event.data));
+            // setLoading(false)
+
+            fetchSelectedRoom()
+        }
         return () => {
-            eventSource.close();
+            eventSourceMessage.close();
+            eventSourceRoom.close();
+
         };
     }, []);
 

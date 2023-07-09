@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import moment from "moment";
 import Modal from "./Modal";
 
@@ -13,7 +13,8 @@ let user = {
 }
     const [state, setState] = useState({
         content:message.content,
-        displayForm:false
+        displayForm:false,
+        displayMessage:true
     })
     const displayForm = (props) => {
 
@@ -34,7 +35,7 @@ let user = {
     const updateMessage = () => {
 
         const url = `/api/messages/`+ message.id ;
-
+console.log('updateMessage',url)
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -56,7 +57,6 @@ let user = {
     const deleteMessage = () => {
 
         const url = `/api/messages/` + message.id;
-console.log(url)
         fetch(url, {method: 'DELETE'})
             .then(function (response) {
                 console.log(response)
@@ -64,6 +64,38 @@ console.log(url)
                 return true
             })
     }
+
+    useEffect(() => {
+        const eventSource = new EventSource("https://localhost/.well-known/mercure?topic=https://127.0.0.1:8000/api/messages/" + message.id
+        )
+        eventSource.onmessage = event => {
+            let message = JSON.parse(event.data)
+            console.log(JSON.parse(event.data));
+            // setLoading(false)
+
+          //  refreshSelectedRoom()
+
+            if(message.content)
+            {console.log(message.content)
+               setState(
+                   prevState =>{
+                       return{
+                           ...prevState,
+                           content: message.content}})
+
+
+            }/*else{
+                setState(
+                    prevState =>{
+                        return{
+                            ...prevState,
+                            displayMessage: false}})
+            }*/
+        }
+        return () => {
+            eventSource.close();
+        };
+    }, []);
 
 
     if (message.user.id === user.id){
